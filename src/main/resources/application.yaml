@@ -22,3 +22,26 @@ spring:
       settings:
         web-allow-others: false
 
+  # spring-cloud-streams kafka config
+  cloud:
+    function:
+      definition: patientConsumer
+    stream:
+      kafka:
+        binder:
+          brokers: "localhost:9092"
+          replication-factor: 1
+        streams:
+          binder:
+            configuration:
+              commit:
+                interval:
+                  ms: 1000
+      poller:
+        fixed-delay: 100
+
+      # bindings consumer
+      bindings:
+        patientConsumer-in-0:
+          destination: topicRV
+          group: topicRVGroup
