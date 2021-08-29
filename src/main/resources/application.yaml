@@ -25,7 +25,7 @@ spring:
   # spring-cloud-streams kafka config
   cloud:
     function:
-      definition: patientConsumer
+      definition: patientConsumer;patientSupplier
     stream:
       kafka:
         binder:
@@ -45,3 +45,8 @@ spring:
         patientConsumer-in-0:
           destination: topicRV
           group: topicRVGroup
+
+      # bindings supplier
+        patientSupplier-out-0:
+          destination: topicRVSupplier
+          group: topicRVSupplierGroup
