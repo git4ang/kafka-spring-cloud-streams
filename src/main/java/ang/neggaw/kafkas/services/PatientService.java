@@ -4,6 +4,12 @@ import ang.neggaw.kafkas.entities.Patient;
 import ang.neggaw.kafkas.repositories.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.kstream.Grouped;
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.TimeWindows;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
@@ -63,6 +69,18 @@ public class PatientService {
             }
             return null;
         };
+    }
+
+    @Bean
+    public Function<KStream<String, Patient>, KStream<String, Long>> kStreamFunction() {
+        return patient -> patient
+                .filter((s, p) -> Integer.parseInt(p.getDoctorName().split("-")[1]) > 6)
+                .map((s, p) -> new KeyValue<>(p.getDoctorName(), 0L))
+                .groupBy((data, idPatient) -> data, Grouped.with(Serdes.String(), Serdes.Long()))
+                .windowedBy(TimeWindows.of(5000))
+                .count(Materialized.as("patientCount"))
+                .toStream()
+                .map((k, v) -> new KeyValue<>(k.window().startTime() + " :: " + k.window().endTime() + " ::: " + k.key() + " => ", v));
     }
 
 }
