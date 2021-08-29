@@ -1,0 +1,24 @@
+---
+server:
+  port: 8080
+spring:
+  application:
+    name: kafka-spring-cloud-streams
+  kafka:
+    bootstrap-servers: http://localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+#      client-id: patient-consumer-id-${random.uuid}
+
+  # datasource & h2 config
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: ""
+  h2:
+    console:
+      path: "/h2-console"
+      settings:
+        web-allow-others: false
+
