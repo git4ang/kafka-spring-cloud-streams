@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Random;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -50,4 +51,18 @@ public class PatientService {
     private int newRandom(int first, int end) {
         return first + new Random().nextInt(end);
     }
+
+    @Bean
+    public Function<Patient, Patient> patientPatientFunction() {
+        return patient -> {
+            int month = Integer.parseInt(patient.getAppointment().split("/")[1]);
+            if (month <= 6) {
+                patient.setAppointmentDuration("Unknown");
+                patientRepository.save(patient);
+                return patient;
+            }
+            return null;
+        };
+    }
+
 }
